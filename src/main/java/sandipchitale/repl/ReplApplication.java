@@ -3,6 +3,7 @@ package sandipchitale.repl;
 import org.jline.reader.History;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.InfoCmp;
@@ -27,6 +28,7 @@ public class ReplApplication {
 					.build();
 			LineReader reader = LineReaderBuilder.builder()
 					.terminal(terminal)
+					.completer(new StringsCompleter("/help", "/history", "/cls", "#"))
 					.build();
 
 			String replCommand = String.join(" ", args);
@@ -38,7 +40,9 @@ public class ReplApplication {
 				if (line.trim().isEmpty()) {
 					continue;
 				}
-				if (line.trim().equalsIgnoreCase("/history")) {
+				if (line.trim().startsWith("#")) {
+					reader.getHistory().add(line);
+				} else if (line.trim().equalsIgnoreCase("/history")) {
 					reader.getHistory().forEach(((History.Entry entry) -> {
 						System.out.printf("%d %s%n", entry.index() + 1, entry.line());
 					}));
